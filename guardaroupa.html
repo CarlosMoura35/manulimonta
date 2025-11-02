@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guarda Roupa de Manuela Limonta</title>
+  <style>
+    body {
+      background-color: #1b1b1b;
+      color: #dfe6dd;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #4b5320; /* verde militar */
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+      font-size: 1.8em;
+      font-weight: bold;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      background-color: #2e2f26;
+      flex-wrap: wrap;
+    }
+
+    nav button {
+      background-color: #4b5320;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    nav button:hover, nav button.active {
+      background-color: #6b7755;
+    }
+
+    .content {
+      display: none;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .content.active {
+      display: block;
+    }
+
+    .upload-area {
+      margin-bottom: 15px;
+    }
+
+    .upload-area input {
+      display: none;
+    }
+
+    .upload-label {
+      display: inline-block;
+      background-color: #4b5320;
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .gallery img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 2px solid #4b5320;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      color: #aaa;
+      background-color: #2e2f26;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>👗 Guarda Roupa de Manuela Limonta 👠</header>
+
+  <nav>
+    <button class="tab active" data-tab="camiseta">Camisetas</button>
+    <button class="tab" data-tab="blusa">Blusas de Frio</button>
+    <button class="tab" data-tab="body">Bodys</button>
+    <button class="tab" data-tab="short">Shorts</button>
+    <button class="tab" data-tab="saia">Saias</button>
+    <button class="tab" data-tab="calca">Calças</button>
+    <button class="tab" data-tab="sapato">Sapatos</button>
+  </nav>
+
+  <!-- Áreas de conteúdo -->
+  <div id="camiseta" class="content active"></div>
+  <div id="blusa" class="content"></div>
+  <div id="body" class="content"></div>
+  <div id="short" class="content"></div>
+  <div id="saia" class="content"></div>
+  <div id="calca" class="content"></div>
+  <div id="sapato" class="content"></div>
+
+  <footer>© 2025 Guarda Roupa de Manuela Limonta</footer>
+
+  <script>
+    const abas = document.querySelectorAll('.tab');
+    const conteudos = document.querySelectorAll('.content');
+
+    abas.forEach(botao => {
+      botao.addEventListener('click', () => {
+        abas.forEach(b => b.classList.remove('active'));
+        conteudos.forEach(c => c.classList.remove('active'));
+        botao.classList.add('active');
+        document.getElementById(botao.dataset.tab).classList.add('active');
+      });
+    });
+
+    const categorias = ['camiseta', 'blusa', 'body', 'short', 'saia', 'calca', 'sapato'];
+
+    categorias.forEach(cat => {
+      const div = document.getElementById(cat);
+      div.innerHTML = `
+        <div class="upload-area">
+          <label class="upload-label" for="upload-${cat}">📸 Adicionar foto de ${cat}</label>
+          <input type="file" accept="image/*" id="upload-${cat}" capture="environment">
+        </div>
+        <div class="gallery" id="gallery-${cat}"></div>
+      `;
+
+      const input = div.querySelector(`#upload-${cat}`);
+      const galeria = div.querySelector(`#gallery-${cat}`);
+
+      // Carrega fotos salvas
+      const fotosSalvas = JSON.parse(localStorage.getItem(cat)) || [];
+      fotosSalvas.forEach(f => {
+        const img = document.createElement('img');
+        img.src = f;
+        galeria.appendChild(img);
+      });
+
+      // Upload de nova imagem
+      input.addEventListener('change', e => {
+        const arquivo = e.target.files[0];
+        if (!arquivo) return;
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const img = document.createElement('img');
+          img.src = evt.target.result;
+          galeria.appendChild(img);
+
+          fotosSalvas.push(evt.target.result);
+          localStorage.setItem(cat, JSON.stringify(fotosSalvas));
+        };
+        reader.readAsDataURL(arquivo);
+      });
+    });
+  </script>
+
+</body>
+</html>
